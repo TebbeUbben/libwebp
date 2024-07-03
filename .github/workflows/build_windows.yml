@@ -1,0 +1,26 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Clone libwebp
+        run: git clone https://chromium.googlesource.com/webm/libwebp
+      - name: Checkout v1.4.0
+        working-directory: libwebp
+        run: git checkout v1.4.0
+      - name: CMake Configure
+        working-directory: libwebp
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -B build
+      - name: CMake Build
+        working-directory: libwebp
+        run: cmake --build build --target webp --config Release
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-22_04-build
+          path: libwebp/build
